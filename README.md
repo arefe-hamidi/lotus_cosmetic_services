@@ -2,61 +2,88 @@
 
 A Django REST Framework project for managing cosmetic services.
 
-## Features
+## ✨ Features
 
 - Django 4.2+
 - Django REST Framework
+- JWT Authentication
 - Unfold Admin Interface
-- PostgreSQL Database
+- PostgreSQL Database Support
 - Custom Permission Classes with API Key support
 - Abstract DateTime Model for all models
 - Persian language support
 
-## Installation
+## 🚀 Quick Start
+
+### Installation
 
 1. Create a virtual environment:
+
 ```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+python3 -m venv venv
 ```
 
 2. Install dependencies:
+
 ```bash
-pip install -r requirements.txt
+./venv/bin/pip install -r requirements.txt
 ```
 
-3. Copy environment variables:
+3. Run migrations:
+
 ```bash
-cp .env.example .env
+./venv/bin/python manage.py migrate
 ```
 
-4. Update `.env` file with your database credentials and secret key.
+4. Create a superuser:
 
-5. Run migrations:
 ```bash
-python manage.py migrate
+./venv/bin/python manage.py createsuperuser
 ```
 
-6. Create a superuser:
+5. Run the development server:
+
 ```bash
-python manage.py createsuperuser
+./venv/bin/python manage.py runserver
 ```
 
-7. Run the development server:
-```bash
-python manage.py runserver
-```
+Server will be available at: `http://127.0.0.1:8000`
 
-## Project Structure
+## 📚 Documentation
+
+تمام مستندات در پوشه `docs/` قرار دارند:
+
+- **[📖 Documentation Index](./docs/README.md)** - فهرست کامل مستندات
+- **[🔐 Authentication](./docs/auth/)** - راهنمای احراز هویت و JWT
+- **[🚀 Setup Guide](./docs/setup/)** - راهنمای نصب و راه‌اندازی
+- **[📮 Postman](./docs/postman/)** - راهنمای استفاده از Postman
+
+### Quick Links
+
+- [Quick Start Guide](./docs/setup/QUICK_START.md)
+- [How to Run](./docs/setup/HOW_TO_RUN.md)
+- [JWT Authentication](./docs/auth/JWT_AUTHENTICATION.md)
+- [Postman Import Guide](./docs/postman/POSTMAN_IMPORT_GUIDE.md)
+
+## 📁 Project Structure
 
 ```
 lotus_cosmetic_services/
-├── config/           # Project settings and configuration
-├── utils/            # Utility classes and helpers
+├── api/              # API endpoints
+│   ├── views.py      # API views
+│   ├── serializers.py # Serializers
+│   └── urls.py       # URL routing
+├── config/           # Project settings
+│   ├── settings.py   # Django settings
+│   └── urls.py       # Main URL config
+├── utils/            # Utility classes
 │   ├── models.py     # AbstractDateTimeModel
 │   ├── admin.py      # DateTimeAdminMixin
-│   └── permissions.py # Custom permission classes
-├── api/              # API endpoints
+│   └── permissions.py # Custom permissions
+├── docs/             # Documentation
+│   ├── auth/         # Authentication docs
+│   ├── setup/        # Setup guides
+│   └── postman/      # Postman guides
 ├── manage.py
 └── requirements.txt
 ```
@@ -64,16 +91,19 @@ lotus_cosmetic_services/
 ## Development Guidelines
 
 ### Models
+
 - All models must inherit from `AbstractDateTimeModel`
 - All field verbose names must be in Persian using `gettext_lazy`
 - Models must have `verbose_name` and `verbose_name_plural` in Persian
 
 ### Admin
+
 - All admin classes must inherit from `unfold_admin.admin.ModelAdmin`
 - Use `DateTimeAdminMixin` for created/updated fields
 - Organize fields using fieldsets
 
 ### Views
+
 - Use generic views when possible
 - All views must have serializers (except specific cases)
 - Define `permission_classes` in views
@@ -81,10 +111,10 @@ lotus_cosmetic_services/
 - Use `IsAuthenticatedWithAPIKey` for protected endpoints
 
 ### URLs
+
 - URL names should be meaningful
 - Follow the pattern: `app_name/action/` or `app_name/action/<id>/`
 
 ## License
 
 This project is proprietary software.
-
