@@ -37,6 +37,22 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             'last_name': {'required': False},
         }
 
+    def validate_username(self, value):
+        """
+        Validate that username is unique in the database.
+        """
+        if User.objects.filter(username=value).exists():
+            raise serializers.ValidationError(_('این نام کاربری قبلاً استفاده شده است. لطفاً نام کاربری دیگری انتخاب کنید.'))
+        return value
+
+    def validate_email(self, value):
+        """
+        Validate that email is unique in the database.
+        """
+        if User.objects.filter(email=value).exists():
+            raise serializers.ValidationError(_('این ایمیل قبلاً استفاده شده است. لطفاً ایمیل دیگری وارد کنید.'))
+        return value
+
     def validate(self, attrs):
         """
         Validate that password and password_confirm match.
@@ -52,13 +68,27 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         Create a new user with encrypted password.
         """
         validated_data.pop('password_confirm')
-        user = User.objects.create_user(
-            username=validated_data['username'],
-            email=validated_data['email'],
-            password=validated_data['password'],
-            first_name=validated_data.get('first_name', ''),
-            last_name=validated_data.get('last_name', ''),
-        )
+        try:
+            user = User.objects.create_user(
+                username=validated_data['username'],
+                email=validated_data['email'],
+                password=validated_data['password'],
+                first_name=validated_data.get('first_name', ''),
+                last_name=validated_data.get('last_name', ''),
+            )
+        except Exception as e:
+            # Handle database integrity errors
+            from django.db import IntegrityError
+            if isinstance(e, IntegrityError):
+                if 'username' in str(e).lower() or 'unique constraint' in str(e).lower():
+                    raise serializers.ValidationError({
+                        'username': _('این نام کاربری قبلاً استفاده شده است. لطفاً نام کاربری دیگری انتخاب کنید.')
+                    })
+                elif 'email' in str(e).lower():
+                    raise serializers.ValidationError({
+                        'email': _('این ایمیل قبلاً استفاده شده است. لطفاً ایمیل دیگری وارد کنید.')
+                    })
+            raise
         return user
 
 

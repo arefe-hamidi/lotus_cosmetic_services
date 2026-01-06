@@ -1,348 +1,583 @@
 {
-	"info": {
-		"_postman_id": "lotus-cosmetic-services-api",
-		"name": "Lotus Cosmetic Services API",
-		"description": "Complete API collection for Lotus Cosmetic Services including authentication endpoints",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-	},
-	"item": [
-		{
-			"name": "Health & Test",
-			"item": [
-				{
-					"name": "Health Check",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/api/health/",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"health",
-								""
-							]
-						},
-						"description": "Public health check endpoint"
-					},
-					"response": []
-				},
-				{
-					"name": "Protected Endpoint",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Cookie",
-								"value": "sessionid={{session_id}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/protected/",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"protected",
-								""
-							]
-						},
-						"description": "Protected endpoint that requires authentication"
-					},
-					"response": []
-				}
-			],
-			"description": "Health check and test endpoints"
-		},
-		{
-			"name": "Authentication",
-			"item": [
-				{
-					"name": "Register",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"if (pm.response.code === 201) {",
-									"    var jsonData = pm.response.json();",
-									"    if (jsonData.user && jsonData.user.id) {",
-									"        pm.environment.set(\"user_id\", jsonData.user.id);",
-									"        pm.environment.set(\"username\", jsonData.user.username);",
-									"    }",
-									"}"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"username\": \"testuser\",\n    \"email\": \"test@example.com\",\n    \"first_name\": \"Test\",\n    \"last_name\": \"User\",\n    \"password\": \"testpass123\",\n    \"password_confirm\": \"testpass123\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{base_url}}/api/auth/register/",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"auth",
-								"register",
-								""
-							]
-						},
-						"description": "Register a new user account"
-					},
-					"response": []
-				},
-				{
-					"name": "Login",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"if (pm.response.code === 200) {",
-									"    // Save session cookie",
-									"    var cookies = pm.cookies.all();",
-									"    var sessionCookie = cookies.find(cookie => cookie.name === 'sessionid');",
-									"    if (sessionCookie) {",
-									"        pm.environment.set(\"session_id\", sessionCookie.value);",
-									"    }",
-									"    ",
-									"    // Save user info",
-									"    var jsonData = pm.response.json();",
-									"    if (jsonData.user) {",
-									"        pm.environment.set(\"user_id\", jsonData.user.id);",
-									"        pm.environment.set(\"username\", jsonData.user.username);",
-									"        pm.environment.set(\"user_email\", jsonData.user.email);",
-									"    }",
-									"}"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"username\": \"{{username}}\",\n    \"password\": \"testpass123\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{base_url}}/api/auth/login/",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"auth",
-								"login",
-								""
-							]
-						},
-						"description": "Login and create session"
-					},
-					"response": []
-				},
-				{
-					"name": "Get Profile",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Cookie",
-								"value": "sessionid={{session_id}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/auth/profile/",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"auth",
-								"profile",
-								""
-							]
-						},
-						"description": "Get current user profile"
-					},
-					"response": []
-				},
-				{
-					"name": "Update Profile",
-					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							},
-							{
-								"key": "Cookie",
-								"value": "sessionid={{session_id}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"email\": \"newemail@example.com\",\n    \"first_name\": \"Updated\",\n    \"last_name\": \"Name\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{base_url}}/api/auth/profile/",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"auth",
-								"profile",
-								""
-							]
-						},
-						"description": "Update current user profile"
-					},
-					"response": []
-				},
-				{
-					"name": "Change Password",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							},
-							{
-								"key": "Cookie",
-								"value": "sessionid={{session_id}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"old_password\": \"testpass123\",\n    \"new_password\": \"newpass123\",\n    \"new_password_confirm\": \"newpass123\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{base_url}}/api/auth/password/change/",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"auth",
-								"password",
-								"change",
-								""
-							]
-						},
-						"description": "Change user password"
-					},
-					"response": []
-				},
-				{
-					"name": "Logout",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Cookie",
-								"value": "sessionid={{session_id}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{base_url}}/api/auth/logout/",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"auth",
-								"logout",
-								""
-							]
-						},
-						"description": "Logout current user"
-					},
-					"response": []
-				}
-			],
-			"description": "Authentication endpoints"
-		}
-	],
-	"event": [
-		{
-			"listen": "prerequest",
-			"script": {
-				"type": "text/javascript",
-				"exec": [
-					""
-				]
-			}
-		},
-		{
-			"listen": "test",
-			"script": {
-				"type": "text/javascript",
-				"exec": [
-					""
-				]
-			}
-		}
-	],
-	"variable": [
-		{
-			"key": "base_url",
-			"value": "http://127.0.0.1:8000",
-			"type": "string"
-		}
-	]
+  "info": {
+    "_postman_id": "lotus-cosmetic-services-api",
+    "name": "Lotus Cosmetic Services API",
+    "description": "Complete API collection for Lotus Cosmetic Services including authentication endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health & Test",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/health/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "health", ""]
+            },
+            "description": "Public health check endpoint"
+          },
+          "response": []
+        },
+        {
+          "name": "Protected Endpoint",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/protected/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "protected", ""]
+            },
+            "description": "Protected endpoint that requires authentication"
+          },
+          "response": []
+        }
+      ],
+      "description": "Health check and test endpoints"
+    },
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (jsonData.user && jsonData.user.id) {",
+                  "        pm.environment.set(\"user_id\", jsonData.user.id);",
+                  "        pm.environment.set(\"username\", jsonData.user.username);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"username\": \"testuser\",\n    \"email\": \"test@example.com\",\n    \"first_name\": \"Test\",\n    \"last_name\": \"User\",\n    \"password\": \"testpass123\",\n    \"password_confirm\": \"testpass123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/register/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "register", ""]
+            },
+            "description": "Register a new user account"
+          },
+          "response": []
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    // Save JWT tokens",
+                  "    var jsonData = pm.response.json();",
+                  "    if (jsonData.tokens) {",
+                  "        pm.environment.set(\"access_token\", jsonData.tokens.access);",
+                  "        pm.environment.set(\"refresh_token\", jsonData.tokens.refresh);",
+                  "    }",
+                  "    ",
+                  "    // Save session cookie",
+                  "    var cookies = pm.cookies.all();",
+                  "    var sessionCookie = cookies.find(cookie => cookie.name === 'sessionid');",
+                  "    if (sessionCookie) {",
+                  "        pm.environment.set(\"session_id\", sessionCookie.value);",
+                  "    }",
+                  "    ",
+                  "    // Save user info",
+                  "    if (jsonData.user) {",
+                  "        pm.environment.set(\"user_id\", jsonData.user.id);",
+                  "        pm.environment.set(\"username\", jsonData.user.username);",
+                  "        pm.environment.set(\"user_email\", jsonData.user.email);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"username\": \"{{username}}\",\n    \"password\": \"testpass123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "login", ""]
+            },
+            "description": "Login and create session"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/auth/profile/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "profile", ""]
+            },
+            "description": "Get current user profile"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"newemail@example.com\",\n    \"first_name\": \"Updated\",\n    \"last_name\": \"Name\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/profile/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "profile", ""]
+            },
+            "description": "Update current user profile"
+          },
+          "response": []
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"old_password\": \"testpass123\",\n    \"new_password\": \"newpass123\",\n    \"new_password_confirm\": \"newpass123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/password/change/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "password", "change", ""]
+            },
+            "description": "Change user password"
+          },
+          "response": []
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/auth/logout/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "logout", ""]
+            },
+            "description": "Logout current user"
+          },
+          "response": []
+        },
+        {
+          "name": "Refresh Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (jsonData.access) {",
+                  "        pm.environment.set(\"access_token\", jsonData.access);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"refresh\": \"{{refresh_token}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/token/refresh/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "token", "refresh", ""]
+            },
+            "description": "Refresh access token"
+          },
+          "response": []
+        },
+        {
+          "name": "Verify Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"token\": \"{{access_token}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/token/verify/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "token", "verify", ""]
+            },
+            "description": "Verify token validity"
+          },
+          "response": []
+        }
+      ],
+      "description": "Authentication endpoints"
+    },
+    {
+      "name": "Role Management",
+      "item": [
+        {
+          "name": "List Roles",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/roles/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "roles", ""]
+            },
+            "description": "List all active roles. Requires admin role."
+          },
+          "response": []
+        },
+        {
+          "name": "Create Role",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"مدیر سیستم\",\n    \"code\": \"admin\",\n    \"description\": \"دسترسی کامل به سیستم\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/roles/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "roles", ""]
+            },
+            "description": "Create a new role. Requires admin role."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Role Detail",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/roles/{{role_id}}/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "roles", "{{role_id}}", ""]
+            },
+            "description": "Get role details. Requires admin role."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Role",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"مدیر سیستم\",\n    \"code\": \"admin\",\n    \"description\": \"توضیحات بروزرسانی شده\",\n    \"is_active\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/roles/{{role_id}}/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "roles", "{{role_id}}", ""]
+            },
+            "description": "Update role. Requires admin role."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Role",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/roles/{{role_id}}/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "roles", "{{role_id}}", ""]
+            },
+            "description": "Delete role (soft delete). Requires admin role."
+          },
+          "response": []
+        },
+        {
+          "name": "Get User Roles",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/users/{{user_id}}/roles/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "users", "{{user_id}}", "roles", ""]
+            },
+            "description": "Get all roles for a user. Requires admin role."
+          },
+          "response": []
+        },
+        {
+          "name": "Add Role to User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"role_id\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/users/{{user_id}}/roles/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "users", "{{user_id}}", "roles", ""]
+            },
+            "description": "Add a role to a user. Requires admin role."
+          },
+          "response": []
+        },
+        {
+          "name": "Remove Role from User",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/users/{{user_id}}/roles/{{role_id}}/",
+              "host": ["{{base_url}}"],
+              "path": [
+                "api",
+                "users",
+                "{{user_id}}",
+                "roles",
+                "{{role_id}}",
+                ""
+              ]
+            },
+            "description": "Remove a role from a user. Requires admin role."
+          },
+          "response": []
+        }
+      ],
+      "description": "Role management endpoints (requires admin role)"
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:8000",
+      "type": "string"
+    }
+  ]
 }
-
