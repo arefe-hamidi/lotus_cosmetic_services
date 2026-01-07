@@ -8,7 +8,7 @@ from unfold.admin import ModelAdmin
 
 # Local Apps
 from utils.admin import DateTimeAdminMixin
-from .models import Role, UserRole
+from ..models import Role, UserRole
 
 
 @admin.register(Role)

@@ -9,10 +9,6 @@ from .authentication import (
     UserProfileView,
     password_change,
 )
-from .health import (
-    health_check,
-    protected_endpoint,
-)
 from .roles import (
     RoleListViewSet,
     RoleDetailViewSet,
@@ -23,8 +19,6 @@ from .roles import (
 User = get_user_model()
 
 __all__ = [
-    'health_check',
-    'protected_endpoint',
     'user_register',
     'user_login',
     'user_logout',
